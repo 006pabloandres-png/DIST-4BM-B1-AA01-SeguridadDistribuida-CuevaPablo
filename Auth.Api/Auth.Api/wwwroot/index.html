@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso con Google - AA01</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Autenticación Externa con Google (OpenID Connect)</h2>
+    <p>Inicia sesión con tu cuenta de Google para obtener el JWT local de <b>Auth.Api</b>:</p>
+
+    <div id="g_id_onload"
+         data-client_id="TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <h3>Respuesta de Auth.Api:</h3>
+    <pre id="resultado">Esperando autenticación...</pre>
+
+    <script>
+                async function handleCredentialResponse(response = { credential: '' }) {
+                    const res = await fetch('/api/auth/google', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ idToken: response.credential })
+                    });
+                    const data = await res.json();
+                    const preResultado = document.getElementById('resultado');
+                    if (preResultado) {
+                        preResultado.textContent = JSON.stringify(data, null, 2);
+                    }
+                }
+    </script>
+</body>
+</html>
